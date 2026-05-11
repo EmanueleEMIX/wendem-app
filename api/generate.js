@@ -21,4 +21,40 @@ export default async function handler(req, res) {
 Struttura:
 {"nome":"max 6 parole","sottotitolo":"max 12 parole","km":"numero","durata":"es. 3h 10m","soste":"numero","difficolta":"Facile|Media|Tecnica","waypoints":[{"emoji":"emoji","nome":"luogo reale","dettaglio":"orario e descrizione max 12 parole","tag":"Partenza|Caffe|Panorama|Pranzo|Benzina|Arrivo|Sosta","tagColore":"verde|arancio|blu|grigio"}]}
 
-Cre
+Crea 4-6 waypoints con luoghi italiani reali. Primo=Partenza, ultimo=Arrivo. SOLO JSON.`;
+
+  try {
+    const apiResponse = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!apiResponse.ok) {
+      const errText = await apiResponse.text();
+      console.error('Anthropic error:', errText);
+      return res.status(500).json({ error: 'Errore API: ' + apiResponse.status });
+    }
+
+    const data = await apiResponse.json();
+    const raw = data?.content?.find(b => b.type === 'text')?.text || '';
+    if (!raw) return res.status(500).json({ error: 'Risposta vuota' });
+
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const route = JSON.parse(clean);
+    return res.status(200).json(route);
+
+  } catch (error) {
+    console.error('Errore:', error.message);
+    return res.status(500).json({ error: error.message });
+  }
+}
