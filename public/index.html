@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wendem — Dai, we andem.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ot:#1A7A6E;--ot2:#2A9B8C;--ot3:#EAF5F3;--ot4:#115C53;
+  --ink:#141A18;--ink2:#4A5552;--ink3:#8A9C98;
+  --bg:#F5F8F7;--surface:#FFF;--border:#DDE8E5;
+  --gold:#B07A10;--goldbg:#FFF8E8;
+}
+html,body{min-height:100%;background:#E8EDEC;font-family:'DM Sans',sans-serif;color:var(--ink);}
+.shell{max-width:390px;margin:0 auto;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.12);}
+.screen{display:none;flex-direction:column;flex:1;padding-bottom:70px;}
+.screen.active{display:flex;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:30;}
+.logo{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--ink);}
+.logo b{color:var(--ot);}
+.nav-pill{font-size:11px;font-weight:500;background:var(--ot3);color:var(--ot4);padding:4px 10px;border-radius:20px;}
+.nbtn{background:none;border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--ink2);cursor:pointer;}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:40;padding:8px 0 12px;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--ink3);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:color .2s;padding:4px 0;}
+.bni.active{color:var(--ot);}
+.bni-ic{font-size:17px;}
+.hero{padding:28px 18px 16px;}
+.eyebrow{font-size:10px;font-weight:500;color:var(--ot);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.htitle{font-family:'Fraunces',serif;font-size:30px;line-height:1.2;font-weight:500;color:var(--ink);margin-bottom:6px;}
+.htitle em{font-style:italic;color:var(--ot);}
+.hsub{font-size:13px;color:var(--ink2);line-height:1.6;font-weight:300;margin-top:6px;}
+.aicard{margin:0 18px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:16px;transition:border-color .25s,box-shadow .25s;}
+.aicard:focus-within{border-color:var(--ot);box-shadow:0 0 0 3px rgba(26,122,110,.07);}
+.ailabel{font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.ailabel::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--ot);display:inline-block;}
+textarea{width:100%;border:none;outline:none;resize:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:transparent;line-height:1.7;min-height:80px;}
+textarea::placeholder{color:#C0CECA;}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin:0 18px 14px;}
+.chip{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:11px;color:var(--ink2);font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s;}
+.chip:hover{background:var(--ot3);border-color:var(--ot);color:var(--ot4);}
+.tt-wrap{margin:0 18px 14px;}
+.tt-label{font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.tt-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ttc{background:var(--surface);border:1.5px solid var(--border);border-radius:13px;padding:12px;cursor:pointer;transition:all .2s;}
+.ttc.sel{border-color:var(--ot);background:var(--ot3);}
+.ttc-ic{font-size:18px;margin-bottom:6px;}
+.ttc-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.ttc.sel .ttc-name{color:var(--ot4);}
+.ttc-desc{font-size:11px;color:var(--ink3);line-height:1.4;}
+.open-cfg{margin:0 18px 14px;background:var(--ot3);border:1px solid #B8DED9;border-radius:13px;padding:14px;}
+.cfg-title{font-size:12px;font-weight:500;color:var(--ot4);margin-bottom:10px;}
+.cfg-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cfg-row:last-child{margin-bottom:0;}
+.cfg-text{font-size:12px;color:var(--ink2);}
+.cfg-sub{font-size:10px;color:var(--ink3);margin-top:1px;}
+.tog{width:38px;height:22px;border-radius:11px;background:#C8D8D6;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.tog.on{background:var(--ot);}
+.tog::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;}
+.tog.on::after{left:19px;}
+.range-row{display:flex;align-items:center;gap:8px;width:100%;}
+.range-row input{flex:1;accent-color:var(--ot);}
+.rval{font-size:12px;font-weight:500;color:var(--ot4);min-width:36px;}
+.genwrap{padding:0 18px 16px;}
+.genbtn{width:100%;padding:14px;background:var(--ot);color:#fff;border:none;border-radius:13px;font-family:'Fraunces',serif;font-size:16px;font-weight:500;font-style:italic;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.genbtn:hover:not(:disabled){background:var(--ot4);transform:translateY(-1px);box-shadow:0 5px 16px rgba(26,122,110,.22);}
+.genbtn:disabled{opacity:.55;cursor:not-allowed;}
+.ldr{display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 18px;gap:12px;}
+.ldr.show{display:flex;}
+.lring{width:36px;height:36px;border-radius:50%;border:2.5px solid var(--border);border-top-color:var(--ot);animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ltxt{font-size:13px;color:var(--ink2);}
+.lsub{font-size:11px;color:var(--ink3);}
+.errbox{margin:0 18px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;font-size:12px;color:#991B1B;display:none;}
+.errbox.show{display:block;}
+.res-header{padding:16px 18px 0;}
+.backbtn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink3);cursor:pointer;padding:0 0 12px;display:flex;align-items:center;gap:4px;}
+.backbtn:hover{color:var(--ot);}
+.res-name{font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:var(--ink);margin-bottom:3px;letter-spacing:-.3px;}
+.res-sub{font-size:12px;color:var(--ink3);margin-bottom:14px;}
+.res-stats{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.rstat{flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--border);}
+.rstat:last-child{border-right:none;}
+.rstat-v{font-family:'Fraunces',serif;font-size:16px;font-weight:500;color:var(--ink);}
+.rstat-l{font-size:9px;color:var(--ink3);margin-top:1px;text-transform:uppercase;letter-spacing:.04em;}
+.tbadge{display:inline-flex;align-items:center;gap:5px;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:500;margin-bottom:14px;}
+.tbadge.open{background:var(--ot3);color:var(--ot4);}
+.tbadge.closed{background:#F0F0EC;color:#555;}
+.part-box{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px;margin:0 18px 14px;}
+.part-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.part-title{font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;}
+.part-add{font-size:11px;color:var(--ot);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.prow{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);}
+.prow:last-child{border-bottom:none;padding-bottom:0;}
+.prow:first-child{padding-top:0;}
+.pav{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.pinfo{flex:1;}
+.pname{font-size:13px;font-weight:500;color:var(--ink);}
+.pstatus{font-size:11px;color:var(--ink3);}
+.pstatus.ok{color:var(--ot);}
+.pstatus.wait{color:var(--gold);}
+.mapbox{margin:0 18px 14px;height:150px;background:linear-gradient(145deg,#C4DAD5,#A8C8C0);border-radius:14px;position:relative;overflow:hidden;border:1px solid var(--border);}
+.mapsvg{position:absolute;inset:0;width:100%;height:100%;}
+.mapbadge{position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,.9);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:500;color:var(--ink);}
+.wp-wrap{padding:0 18px;}
+.wp-label{font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.wp{display:flex;gap:10px;padding-bottom:14px;position:relative;}
+.wp:not(:last-child)::before{content:'';position:absolute;left:14px;top:30px;bottom:0;width:1px;background:var(--border);}
+.wpdot{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.wpc{flex:1;padding-top:3px;}
+.wpn{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:1px;}
+.wpd{font-size:11px;color:var(--ink3);line-height:1.5;}
+.wptag{display:inline-block;font-size:9px;font-weight:500;padding:2px 6px;border-radius:4px;margin-top:3px;text-transform:uppercase;letter-spacing:.04em;}
+.sponsored{margin:14px 18px 0;background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+.sp-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sp-title{font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;}
+.sp-badge{font-size:9px;font-weight:500;background:#FFF8E8;color:#A07010;padding:2px 7px;border-radius:10px;}
+.sp-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.sp-item:last-child{border-bottom:none;}
+.sp-item:hover{background:var(--bg);}
+.sp-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.sp-info{flex:1;}
+.sp-name{font-size:13px;font-weight:500;color:var(--ink);}
+.sp-meta{font-size:11px;color:var(--ink3);}
+.sp-dist{font-size:11px;font-weight:500;color:var(--ot);}
+.actbar{padding:12px 18px 0;display:flex;gap:7px;}
+.abtn{flex:1;padding:11px;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;border:none;display:flex;align-items:center;justify-content:center;gap:5px;}
+.abtn.s{background:var(--bg);color:var(--ink);border:1px solid var(--border);}
+.abtn.s:hover{border-color:var(--ot);color:var(--ot);}
+.abtn.p{background:var(--ot);color:#fff;}
+.abtn.p:hover{background:var(--ot4);}
+.social-inner{padding:18px;}
+.s-label{font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.range-chip{display:inline-flex;align-items:center;gap:5px;background:var(--ot3);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--ot4);font-weight:500;margin-bottom:12px;}
+.disco-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:9px;}
+.dc-top{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.dcav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.dcui{flex:1;}
+.dcname{font-size:13px;font-weight:500;color:var(--ink);}
+.dcmeta{font-size:11px;color:var(--ink3);}
+.dc-badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:12px;}
+.dc-badge.open{background:var(--ot3);color:var(--ot4);}
+.dc-route{background:var(--bg);border-radius:9px;padding:10px;margin-bottom:9px;}
+.dcr-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.dcr-meta{font-size:11px;color:var(--ink3);}
+.dc-acts{display:flex;gap:6px;}
+.dcbtn{flex:1;padding:8px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;border:none;}
+.dcbtn.join{background:var(--ot);color:#fff;}
+.dcbtn.view{background:var(--bg);color:var(--ink);border:1px solid var(--border);}
+.dcbtn:disabled{opacity:.6;cursor:not-allowed;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.sheet{background:#fff;border-radius:20px 20px 0 0;padding:18px;width:100%;max-width:390px;}
+.shandle{width:30px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.stitle{font-size:16px;font-weight:500;margin-bottom:3px;}
+.ssub{font-size:12px;color:var(--ink3);margin-bottom:14px;}
+.flist{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+.frow{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:10px;background:var(--bg);border:1px solid var(--border);}
+.fav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.fi{flex:1;}
+.fn{font-size:12px;font-weight:500;}
+.fs{font-size:10px;color:var(--ink3);}
+.sbtn{width:100%;padding:12px;background:var(--ot);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.profile-inner{padding:18px;}
+.profile-title{font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+.profile-sub{font-size:13px;color:var(--ink2);margin-bottom:22px;line-height:1.6;}
+.opt-card{background:var(--surface);border:1.5px solid var(--border);border-radius:13px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
+.opt-card.sel{border-color:var(--ot);background:var(--ot3);}
+.opt-row{display:flex;align-items:flex-start;gap:11px;}
+.opt-ic{font-size:20px;flex-shrink:0;margin-top:1px;}
+.opt-txt .oname{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.opt-txt .odesc{font-size:11px;color:var(--ink3);line-height:1.5;}
+.opt-card.sel .oname{color:var(--ot4);}
+.opt-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;transition:all .2s;margin-left:auto;}
+.opt-card.sel .opt-check{background:var(--ot);border-color:var(--ot);}
+.range-cfg{margin-top:16px;background:var(--ot3);border-radius:12px;padding:14px;}
+.rc-title{font-size:12px;font-weight:500;color:var(--ot4);margin-bottom:3px;}
+.rc-sub{font-size:11px;color:var(--ink3);margin-bottom:10px;}
+.save-btn{width:100%;margin-top:20px;padding:13px;background:var(--ink);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.pb{height:16px;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="overlay" id="invOv">
+  <div class="sheet">
+    <div class="shandle"></div>
+    <p class="stitle">Invita al giro</p>
+    <p class="ssub">Chi porti con te?</p>
+    <div class="flist">
+      <div class="frow"><div class="fav" style="background:var(--ot3);color:var(--ot4);">MR</div><div class="fi"><p class="fn">Marco Rossi</p><p class="fs">Online ora</p></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="frow"><div class="fav" style="background:#EBF0FF;color:#2A4AE8;">LB</div><div class="fi"><p class="fn">Luca Bianchi</p><p class="fs">Visto 2h fa</p></div><button class="tog" onclick="this.classList.toggle('on')"></button></div>
+      <div class="frow"><div class="fav" style="background:var(--goldbg);color:var(--gold);">SF</div><div class="fi"><p class="fn">Sara Ferrari</p><p class="fs">Disponibile</p></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <button class="sbtn" onclick="document.getElementById('invOv').classList.remove('open')">Invia invito ✓</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="screen active" id="s-home">
+  <nav class="nav"><span class="logo">Wend<b>em</b></span><span class="nav-pill">Beta</span></nav>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="hero">
+      <p class="eyebrow">AI per motociclisti</p>
+      <h1 class="htitle">Dai, <em>we andem.</em><br>Dove oggi?</h1>
+      <p class="hsub">Descrivi il tuo giro — Wendem pianifica percorso, soste e ristoranti.</p>
+    </div>
+    <div class="aicard">
+      <p class="ailabel">Raccontami il tuo giro</p>
+      <textarea id="promptInput" placeholder="Es. Parto da Milano, voglio curve tra i laghi, sosta caffè, rientro per le 13…"></textarea>
+    </div>
+    <div class="chips">
+      <button class="chip" onclick="addChip('strade curve')">🏍 Curve</button>
+      <button class="chip" onclick="addChip('panoramico')">🌄 Panoramico</button>
+      <button class="chip" onclick="addChip('evita autostrade')">🚫 No autostrade</button>
+      <button class="chip" onclick="addChip('sosta pranzo')">🍝 Pranzo</button>
+    </div>
+    <div class="tt-wrap">
+      <p class="tt-label">Tipo di tour</p>
+      <div class="tt-grid">
+        <div class="ttc sel" id="tt-c" onclick="selTT('closed')"><div class="ttc-ic">🔒</div><p class="ttc-name">Tour chiuso</p><p class="ttc-desc">Solo i tuoi amici</p></div>
+        <div class="ttc" id="tt-o" onclick="selTT('open')"><div class="ttc-ic">🌐</div><p class="ttc-name">Tour aperto</p><p class="ttc-desc">Aperto alla community</p></div>
+      </div>
+    </div>
+    <div class="open-cfg" id="openCfg" style="display:none;">
+      <p class="cfg-title">Impostazioni tour aperto</p>
+      <div class="cfg-row"><div><p class="cfg-text">Raggio partecipanti</p><p class="cfg-sub">Invita chi è entro questa distanza</p></div></div>
+      <div class="cfg-row" style="margin-bottom:12px;"><div class="range-row"><input type="range" min="5" max="100" value="30" step="5" oninput="document.getElementById('rv').textContent=this.value+'km'"><span class="rval" id="rv">30km</span></div></div>
+      <div class="cfg-row"><div><p class="cfg-text">Partecipanti aggiungono tappe</p><p class="cfg-sub">Possono proporre soste al gruppo</p></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="cfg-row"><div><p class="cfg-text">Approva manualmente</p><p class="cfg-sub">Accetti ogni richiesta tu</p></div><button class="tog" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <div class="errbox" id="errbox"></div>
+    <div class="ldr" id="ldr"><div class="lring"></div><p class="ltxt">Wendem sta pianificando…</p><p class="lsub">Cerco le strade migliori per te</p></div>
+    <div class="genwrap"><button class="genbtn" id="genBtn" onclick="generateRoute()">We andem →</button></div>
+  </div>
+  <nav class="bnav">
+    <button class="bni active"><span class="bni-ic">◎</span><span>Esplora</span></button>
+    <button class="bni" onclick="go('s-social')"><span class="bni-ic">◈</span><span>Community</span></button>
+    <button class="bni"><span class="bni-ic">♡</span><span>Salvati</span></button>
+    <button class="bni" onclick="go('s-profile')"><span class="bni-ic">◉</span><span>Profilo</span></button>
+  </nav>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="s-result">
+  <nav class="nav"><span class="logo">Wend<b>em</b></span><button class="nbtn">Salva</button></nav>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="res-header">
+      <button class="backbtn" onclick="go('s-home')">← Nuovo giro</button>
+      <h2 class="res-name" id="rname">—</h2>
+      <p class="res-sub" id="rsub">—</p>
+      <div class="res-stats">
+        <div class="rstat"><div class="rstat-v" id="skm">—</div><div class="rstat-l">km</div></div>
+        <div class="rstat"><div class="rstat-v" id="stime">—</div><div class="rstat-l">durata</div></div>
+        <div class="rstat"><div class="rstat-v" id="sstops">—</div><div class="rstat-l">soste</div></div>
+        <div class="rstat"><div class="rstat-v" id="sdiff">—</div><div class="rstat-l">difficoltà</div></div>
+      </div>
+      <div id="tbadge" class="tbadge open">🌐 Tour aperto · entro 30km</div>
+    </div>
+    <div class="mapbox">
+      <svg class="mapsvg" viewBox="0 0 390 150" xmlns="http://www.w3.org/2000/svg">
+        <defs><filter id="bl"><feGaussianBlur stdDeviation="7"/></filter></defs>
+        <ellipse cx="80" cy="110" rx="55" ry="35" fill="#93C5C0" opacity=".35" filter="url(#bl)"/>
+        <ellipse cx="280" cy="80" rx="70" ry="45" fill="#7BADA8" opacity=".3" filter="url(#bl)"/>
+        <path d="M50,120 C100,85 140,55 200,72 C260,90 290,55 340,62 C365,66 378,72 385,78" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 4" opacity=".85"/>
+        <circle cx="50" cy="120" r="6" fill="#1A7A6E" stroke="white" stroke-width="2"/>
+        <circle cx="200" cy="72" r="5" fill="white" stroke="#1A7A6E" stroke-width="2"/>
+        <circle cx="300" cy="60" r="5" fill="white" stroke="#1A7A6E" stroke-width="2"/>
+        <circle cx="385" cy="78" r="6" fill="#1A7A6E" stroke="white" stroke-width="2"/>
+      </svg>
+      <div class="mapbadge">Apri mappa →</div>
+    </div>
+    <div class="part-box">
+      <div class="part-hdr"><p class="part-title">Partecipanti</p><button class="part-add" onclick="document.getElementById('invOv').classList.add('open')">+ Invita amici</button></div>
+      <div class="prow"><div class="pav" style="background:var(--ot3);color:var(--ot4);">EM</div><div class="pinfo"><p class="pname">Emanuele (tu)</p><p class="pstatus ok">Organizzatore</p></div></div>
+      <div class="prow"><div class="pav" style="background:#EBF0FF;color:#2A4AE8;">MR</div><div class="pinfo"><p class="pname">Marco Rossi</p><p class="pstatus ok">✓ Confermato</p></div></div>
+    </div>
+    <div class="wp-wrap"><p class="wp-label">Tappe del percorso</p><div id="wpContainer"></div></div>
+    <div class="sponsored">
+      <div class="sp-header"><p class="sp-title">Lungo il percorso</p><span class="sp-badge">Sponsorizzati</span></div>
+      <div class="sp-item"><div class="sp-icon" style="background:#FFF8E8;">⛽</div><div class="sp-info"><p class="sp-name">Eni Station</p><p class="sp-meta">Self h24 · Carta accettata</p></div><span class="sp-dist">2.1km</span></div>
+      <div class="sp-item"><div class="sp-icon" style="background:var(--ot3);">🍽</div><div class="sp-info"><p class="sp-name">Ristorante Il Belvedere</p><p class="sp-meta">Cucina lombarda · ★ 4.7</p></div><span class="sp-dist">0.8km</span></div>
+      <div class="sp-item"><div class="sp-icon" style="background:#EBF0FF;">🏪</div><div class="sp-info"><p class="sp-name">Valli Motorrad</p><p class="sp-meta">BMW ufficiale · aperto sab.</p></div><span class="sp-dist">5.4km</span></div>
+    </div>
+    <div class="actbar">
+      <button class="abtn s" onclick="document.getElementById('invOv').classList.add('open')">👥 Invita</button>
+      <button class="abtn s" onclick="go('s-home')">✏️ Modifica</button>
+      <button class="abtn p">⬆ Naviga</button>
+    </div>
+    <div class="pb"></div>
+  </div>
+  <nav class="bnav">
+    <button class="bni" onclick="go('s-home')"><span class="bni-ic">◎</span><span>Esplora</span></button>
+    <button class="bni" onclick="go('s-social')"><span class="bni-ic">◈</span><span>Community</span></button>
+    <button class="bni"><span class="bni-ic">♡</span><span>Salvati</span></button>
+    <button class="bni" onclick="go('s-profile')"><span class="bni-ic">◉</span><span>Profilo</span></button>
+  </nav>
+</div>
+
+<!-- SOCIAL -->
+<div class="screen" id="s-social">
+  <nav class="nav"><span class="logo">Wend<b>em</b></span><span class="nav-pill">Community</span></nav>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="social-inner">
+      <p class="s-label">Tour aperti vicino a te</p>
+      <div class="range-chip">📍 Entro 30km da Cologno Monzese</div>
+      <div class="disco-card">
+        <div class="dc-top"><div class="dcav" style="background:var(--ot3);color:var(--ot4);">AL</div><div class="dcui"><p class="dcname">Alessandro L.</p><p class="dcmeta">Sesto SG · BMW R1250GS</p></div><span class="dc-badge open">🌐 Aperto</span></div>
+        <div class="dc-route"><p class="dcr-name">Triangolo Lariano — domenica mattina</p><p class="dcr-meta">112 km · 2h 45m · ore 8:00 · 2 posti liberi</p></div>
+        <div class="dc-acts"><button class="dcbtn view" onclick="go('s-result')">Vedi percorso</button><button class="dcbtn join" onclick="joinTour(this)">Unisciti</button></div>
+      </div>
+      <div class="disco-card">
+        <div class="dc-top"><div class="dcav" style="background:var(--goldbg);color:var(--gold);">FR</div><div class="dcui"><p class="dcname">Federico R.</p><p class="dcmeta">Monza · Ducati Monster</p></div><span class="dc-badge open">🌐 Aperto</span></div>
+        <div class="dc-route"><p class="dcr-name">Passo dello Stelvio — sabato</p><p class="dcr-meta">198 km · 4h 30m · ore 7:30 · 4 posti liberi</p></div>
+        <div class="dc-acts"><button class="dcbtn view">Vedi percorso</button><button class="dcbtn join" onclick="joinTour(this)">Unisciti</button></div>
+      </div>
+    </div>
+  </div>
+  <nav class="bnav">
+    <button class="bni" onclick="go('s-home')"><span class="bni-ic">◎</span><span>Esplora</span></button>
+    <button class="bni active"><span class="bni-ic">◈</span><span>Community</span></button>
+    <button class="bni"><span class="bni-ic">♡</span><span>Salvati</span></button>
+    <button class="bni" onclick="go('s-profile')"><span class="bni-ic">◉</span><span>Profilo</span></button>
+  </nav>
+</div>
+
+<!-- PROFILO -->
+<div class="screen" id="s-profile">
+  <nav class="nav"><span class="logo">Wend<b>em</b></span></nav>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="profile-inner">
+      <h2 class="profile-title">Privacy & inviti</h2>
+      <p class="profile-sub">Scegli chi può invitarti a un tour aperto.</p>
+      <div class="opt-card sel" id="op-all" onclick="selOpt('all')"><div class="opt-row"><span class="opt-ic">🌐</span><div class="opt-txt"><p class="oname">Disponibile a tutti</p><p class="odesc">Chiunque usi Wendem entro il tuo raggio può invitarti.</p></div><div class="opt-check">✓</div></div></div>
+      <div class="opt-card" id="op-friends" onclick="selOpt('friends')"><div class="opt-row"><span class="opt-ic">👥</span><div class="opt-txt"><p class="oname">Solo amici</p><p class="odesc">Inviti solo da chi hai aggiunto su Wendem.</p></div><div class="opt-check"></div></div></div>
+      <div class="opt-card" id="op-none" onclick="selOpt('none')"><div class="opt-row"><span class="opt-ic">🔒</span><div class="opt-txt"><p class="oname">Non ricevere inviti</p><p class="odesc">Puoi comunque esplorare i tour aperti.</p></div><div class="opt-check"></div></div></div>
+      <div class="range-cfg"><p class="rc-title">Raggio inviti</p><p class="rc-sub">Ricevi inviti da tour entro questa distanza</p><div class="range-row"><input type="range" min="5" max="100" value="30" step="5" oninput="document.getElementById('prv').textContent=this.value+'km'"><span class="rval" id="prv">30km</span></div></div>
+      <button class="save-btn" onclick="go('s-home')">Salva impostazioni</button>
+    </div>
+  </div>
+  <nav class="bnav">
+    <button class="bni" onclick="go('s-home')"><span class="bni-ic">◎</span><span>Esplora</span></button>
+    <button class="bni" onclick="go('s-social')"><span class="bni-ic">◈</span><span>Community</span></button>
+    <button class="bni"><span class="bni-ic">♡</span><span>Salvati</span></button>
+    <button class="bni active"><span class="bni-ic">◉</span><span>Profilo</span></button>
+  </nav>
+</div>
+
+</div>
+
+<script>
+const tagStyles={
+  verde:{bg:'#EAF5F3',color:'#115C53'},
+  arancio:{bg:'#FFF8E8',color:'#A07010'},
+  blu:{bg:'#EBF0FF',color:'#2A4AE8'},
+  grigio:{bg:'#F0F0EC',color:'#555'}
+};
+
+async function generateRoute(){
+  const prompt=document.getElementById('promptInput').value.trim();
+  if(!prompt){
+    const err=document.getElementById('errbox');
+    err.textContent='Descrivi il tuo giro prima di generare!';
+    err.classList.add('show');
+    setTimeout(()=>err.classList.remove('show'),3000);
+    return;
+  }
+  const btn=document.getElementById('genBtn');
+  const ldr=document.getElementById('ldr');
+  const err=document.getElementById('errbox');
+  btn.disabled=true;
+  ldr.classList.add('show');
+  err.classList.remove('show');
+  try{
+    const res=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt})
+    });
+    const route=await res.json();
+    if(route.error)throw new Error(route.error);
+    renderResult(route);
+  }catch(e){
+    err.textContent=e.message||'Errore nella generazione. Riprova.';
+    err.classList.add('show');
+    btn.disabled=false;
+  }finally{
+    ldr.classList.remove('show');
+  }
+}
+
+function renderResult(r){
+  document.getElementById('rname').textContent=r.nome;
+  document.getElementById('rsub').textContent=r.sottotitolo;
+  document.getElementById('skm').textContent=r.km;
+  document.getElementById('stime').textContent=r.durata;
+  document.getElementById('sstops').textContent=r.soste;
+  document.getElementById('sdiff').textContent=r.difficolta;
+  const isOpen=document.getElementById('tt-o').classList.contains('sel');
+  const badge=document.getElementById('tbadge');
+  badge.className='tbadge '+(isOpen?'open':'closed');
+  badge.textContent=isOpen?'🌐 Tour aperto · entro 30km':'🔒 Tour chiuso · solo amici';
+  const c=document.getElementById('wpContainer');
+  c.innerHTML='';
+  r.waypoints.forEach((wp,i)=>{
+    const s=tagStyles[wp.tagColore]||tagStyles.grigio;
+    const d=document.createElement('div');
+    d.className='wp';
+    if(i===r.waypoints.length-1)d.style.paddingBottom='0';
+    d.innerHTML=`<div class="wpdot" style="background:${s.bg}">${wp.emoji}</div><div class="wpc"><p class="wpn">${wp.nome}</p><p class="wpd">${wp.dettaglio}</p><span class="wptag" style="background:${s.bg};color:${s.color}">${wp.tag}</span></div>`;
+    c.appendChild(d);
+  });
+  go('s-result');
+  document.getElementById('genBtn').disabled=false;
+}
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function addChip(t){
+  const ta=document.getElementById('promptInput');
+  ta.value=(ta.value.trimEnd()+(ta.value?', ':'')+t);
+  ta.focus();
+}
+
+function selTT(type){
+  const oc=document.getElementById('openCfg');
+  if(type==='open'){
+    document.getElementById('tt-o').classList.add('sel');
+    document.getElementById('tt-c').classList.remove('sel');
+    oc.style.display='block';
+  }else{
+    document.getElementById('tt-c').classList.add('sel');
+    document.getElementById('tt-o').classList.remove('sel');
+    oc.style.display='none';
+  }
+}
+
+function joinTour(btn){
+  btn.textContent='✓ Richiesta inviata';
+  btn.style.background='var(--ot4)';
+  btn.disabled=true;
+}
+
+function selOpt(type){
+  ['all','friends','none'].forEach(o=>{
+    const c=document.getElementById('op-'+o);
+    c.classList.remove('sel');
+    c.querySelector('.opt-check').textContent='';
+  });
+  const s=document.getElementById('op-'+type);
+  s.classList.add('sel');
+  s.querySelector('.opt-check').textContent='✓';
+}
+</script>
+</body>
+</html>
